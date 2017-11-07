@@ -11,7 +11,9 @@ plot.width <- as.numeric(args[4])
 plot.height <- as.numeric(args[5])
 
 # read in all weights in dir -----------------------------------------------------------------
-weights <- list.files(weights.dir, "*.txt")
+weights <- list.files(weights.dir, pattern="^filter")
+
+print(weights)
 
 sum.threshold <- 0.01
 pass.count <- 0
