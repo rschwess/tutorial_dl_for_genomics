@@ -3,7 +3,7 @@
 
 In this tutorial we will use a convolutional neuronal network to address a fairly basic but common problem in genomics. Given a set of sequences belonging to different classes, what are the characteristics in the DNA sequence that let us distinguish the classes. For example, given a set of promoter and enhancer sequences, we could ask if there are any patterns in the DNA that let us distinguish between the two. 
 
-For a 'simple' example, think of two ChIP-seq experiments for two different transcription factors. After analysing the ChIP-seq data, we know at what positions in the genome the two factors bind and the majority of binding sites might be distinct. If we extract the underlying sequences and search for DNA patterns that are enriched in the respective sets, we get an idea what DNA sequences the transcription factor might bind and/or which co-factors influence their binding. 
+For a 'simple' example, think of two ChIP-seq experiments for two different transcription factors. After analysing the ChIP-seq data, we know at what positions in the genome the two factors bind and the majority of binding sites might be distinct. If we extract the underlying sequences and search for DNA patterns that are enriched in the respective sets, we get an idea what DNA sequences the transcription factor might bind and/or which co-factors influence their binding.
 
 Traditionally, people use motif discovery tools for finding overrepresented words and motifs. However, if we move to slightly more complicated questions these methods quickly reach their limits and machine learning approaches become more promising.
 
@@ -94,7 +94,12 @@ import numpy as np
 import os
 ```
 
-I wrote two helper functions to convert the sequence into a hot encoded sequences and a wrapper to read in and assemble the data. Feel free to skip over this but you might want to have a quick look and understand how we format the data. The hot encoding transforms the sequence into a X x 4 array whith rows corresponding to the sequence position and the columns representing the 4 DNA bases. The respective base column that matches the sequences at that position is 1 the rest 0.
+    Using TensorFlow backend.
+    /home/ron/anaconda3/envs/dl_tutorial/lib/python3.6/importlib/_bootstrap.py:219: RuntimeWarning: compiletime version 3.5 of module 'tensorflow.python.framework.fast_tensor_util' does not match runtime version 3.6
+      return f(*args, **kwds)
+
+
+I wrote two helper functions to convert the sequences into hot encoded sequences and a wrapper to read in and assemble the data. Feel free to skip over this but you might want to have a quick look and understand how we format the data. The hot encoding transforms the sequence into an X x 4 array whith rows corresponding to the sequence position and the columns representing the 4 DNA bases. The respective base column that matches the sequence at that position is 1 the rest 0.
 
 
 ```python
@@ -187,25 +192,25 @@ print(train_seqs[1, 1:10,:])
 
 The labels have a one hot encoding where every column represents a different class and in this case only one class can be active at a time.
 
-The sequences have shape [sample x sequence_length x basis]. As a comparison a set of 2D images would have the dimensions [sample x pixel_rows x pixel_columns x colour_channel]. A grey scale picture would have only one channel while RGB images have three. We can thus think of our sequence as a 1D image with 4 channels.
+The sequences have shape [sample x sequence_length x basis]. As a comparison a set of 2D images would have the dimensions [sample x pixel_rows x pixel_columns x colour_channels]. A grey scale picture would have only one channel while RGB images have three. We can thus think of our sequence as a 1D image with 4 channels.
 
 ----
 
 # Building the Network
 
-We now define our Network. We first set some global and network architechture options and put them all together in the keras Sequqnetial mode. The sequential mode is an easy wrapper for linearly stacked networks that makes your code even more concise. We just define the model to be sequential and than add/stack layer after layer. Here we use a simple convolutional architecture. 
+We now define our network. We first set some global and network architecture options and put them all together in the keras sequential mode. The sequential mode is an easy wrapper for linearly stacked networks that makes your code even more concise. We just define the model to be sequential and than add/stack layer after layer. Here we use a simple convolutional architecture. 
 
 * Our first layer is a 1D convolution over the input:
    * We use a 1D convolution because we only want the filter to move along the sequence axis and map the channels to the hidden units.
-   * We start with 10 hidden units or filters or kernels which are all of length 10 (bp)
+   * We start with 10 hidden units or filters or kernels which are all of length 5 (bp)
    * We use the RELU activation function
    * We also define the input shape and how to pad the input if necessary (see doc.)
 * We next perform max pooling where we take the maximum of a window of 5 consecutive activation values
     * This reduces the data dimension, thus simplifying the model and speeding up further computations
-    * But it also enforces some extend of positional invariance into our model. For example, if we have a match to transcription factor motif in our sequence, we don't necessarily care where exactly this mtif lies and a few bp up- or downstream shouldn't make a difference to our predictions.
+    * But it also enforces some extend of positional invariance into our model. For example, if we have a match to transcription factor motif in our sequence, we don't necessarily care where exactly this motif lies and a few bp up- or downstream shouldn't make a difference to our predictions.
 * We then "Flatten" the activation values to a 1 dimensional vector
 * And apply a fully connected or "Dense" layer connecting every value in the 1D vector to every class prediction
-    * we use sigmoid (softmax) activation function to perform effectively a multinomial logistic regression 
+    * we use the sigmoid (softmax) activation function to perform effectively a multinomial logistic regression 
 
 The number of hidden units, the size of the kernel, the pooling size, but also the number and types of layers we use in the network are usually called hyperparameters. The most work in DL usually comes down to finding the right hyperparameters that let our network training converge and that give us the best possible (at least the best we are able to find) accuracies.
 
@@ -247,13 +252,13 @@ model.summary()
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
-    conv1d_2 (Conv1D)            (None, 200, 10)           210       
+    conv1d_1 (Conv1D)            (None, 200, 10)           210       
     _________________________________________________________________
-    max_pooling1d_2 (MaxPooling1 (None, 40, 10)            0         
+    max_pooling1d_1 (MaxPooling1 (None, 40, 10)            0         
     _________________________________________________________________
-    flatten_2 (Flatten)          (None, 400)               0         
+    flatten_1 (Flatten)          (None, 400)               0         
     _________________________________________________________________
-    dense_2 (Dense)              (None, 4)                 1604      
+    dense_1 (Dense)              (None, 4)                 1604      
     =================================================================
     Total params: 1,814
     Trainable params: 1,814
@@ -285,25 +290,25 @@ model.fit(train_seqs, train_labels,
 
     Train on 38000 samples, validate on 1000 samples
     Epoch 1/5
-    38000/38000 [==============================] - 2s 63us/step - loss: 0.3630 - acc: 0.8311 - val_loss: 0.2440 - val_acc: 0.9012
+    38000/38000 [==============================] - 4s 100us/step - loss: 0.3452 - acc: 0.8439 - val_loss: 0.2210 - val_acc: 0.9100
     Epoch 2/5
-    38000/38000 [==============================] - 2s 59us/step - loss: 0.2070 - acc: 0.9178 - val_loss: 0.1795 - val_acc: 0.9315
+    38000/38000 [==============================] - 4s 100us/step - loss: 0.1913 - acc: 0.9220 - val_loss: 0.1671 - val_acc: 0.9315
     Epoch 3/5
-    38000/38000 [==============================] - 2s 61us/step - loss: 0.1648 - acc: 0.9330 - val_loss: 0.1543 - val_acc: 0.9373
+    38000/38000 [==============================] - 4s 103us/step - loss: 0.1559 - acc: 0.9368 - val_loss: 0.1483 - val_acc: 0.9355
     Epoch 4/5
-    38000/38000 [==============================] - 2s 64us/step - loss: 0.1429 - acc: 0.9419 - val_loss: 0.1360 - val_acc: 0.9417
+    38000/38000 [==============================] - 4s 102us/step - loss: 0.1362 - acc: 0.9454 - val_loss: 0.1308 - val_acc: 0.9442
     Epoch 5/5
-    38000/38000 [==============================] - 3s 67us/step - loss: 0.1278 - acc: 0.9482 - val_loss: 0.1275 - val_acc: 0.9458
+    38000/38000 [==============================] - 4s 114us/step - loss: 0.1228 - acc: 0.9502 - val_loss: 0.1236 - val_acc: 0.9470
 
 
 
 
 
-    <keras.callbacks.History at 0x7fdb0beddf98>
+    <keras.callbacks.History at 0x7fb0d6031b38>
 
 
 
-Looks alright, the training as well as the test accuracy is climbing from epoch to epoch and slows down a little more after every epoch. It is now your task to find better hyperparameters for our network and training procedure to see how high up you can get the accuracy. For doing that, I suggest taking dl_intro.py, commenting out all the code after the training, adjust your hyperparamters and/or network architectures how you like and running it in the terminal via python dl_intro.py. 
+Looks alright, the training as well as the test accuracy is climbing from epoch to epoch and slows down a little more after every epoch. It is now your task to find better hyperparameters for our network and training procedure to see how high up you can get the accuracy. For doing that, I suggest taking dl_intro.py, commenting out all the code after the training, adjust your hyperparameters and/or network architectures how you like and running it in the terminal via python dl_intro.py. 
 
 Tipps: 
 
@@ -315,7 +320,7 @@ Tipps:
 
 * Would a second layer be beneficial?
 
-* You could bias the network architechture with some biological knowledge: How long are transcription factor binding motifs in general and what would be an appropriate filter_width then?
+* You could also bias the network architechture with some biological knowledge: How long are transcription factor binding motifs in general and what would be an appropriate filter_width then?
 
 * (Hint: you can do pretty well in 5 - 10 epochs with minor tweaks!)
 
@@ -324,7 +329,7 @@ Tipps:
 
 # Evaluation and Prediction
 
-Once you are happy with you network performance or in case you want to jump ahead first and optimize later, we will evaluate our network on the held out validation data. Technically, we only optimized on the training data set but we always kept an eye on the test data loss as well. We discarding a nets that does well on the training but worse at the test (overfitted), therefore we always have an intrinsic bias. The validation data set is meant to have never been touched throught the whole optimization process and we evaluate the perormance of our final model on this set to get an unbiased estimate of its performance.
+Once you are happy with you network performance or in case you want to jump ahead first and optimize later, we will evaluate our network on the held out validation data. Technically, we only optimized on the training data set but we always kept an eye on the test data loss as well. We are discarding all nets that do well on the training but worse at the test (overfitted), therefore we always have an intrinsic bias. The validation data set is meant to have never been touched throughout the whole optimization process and we evaluate the perormance of our final model on this set to get an unbiased estimate of its performance.
 
 
 
@@ -337,8 +342,8 @@ print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 ```
 
-    Test loss: 0.127488910317
-    Test accuracy: 0.94575
+    Test loss: 0.123626101106
+    Test accuracy: 0.947
 
 
 Once we are happy with our network we obviously want to employ it as well. Lets say we have a new sequence we want to classify.
@@ -373,16 +378,17 @@ print("\tClass 1 = %s" % single_prediction[0][1])
 print("\tClass 2 = %s" % single_prediction[0][2])
 print("\tClass 3 = %s" % single_prediction[0][3])
 
+# print the true class
 print("\nTrue Class: " + single_label)
 ```
 
     Sequence: CATCGTCATATATGTAGTAACCATCCTGTATATATGCCCTCTGGTATATATTGATATATGACCGCCACCTGTTGGCAATATAAAGAGATCTAGTATGCAAGAAGCCCACGACCGAAGTCTCCGCCAGTAGGGGTCAGCCACAAGGGGGCGCTATAGGCGCAATTGCGATACTATATATTACAGCACATGACCACGCGACG
     
     Class Prediction "Probability":
-    	Class 0 = 1.11973e-07
-    	Class 1 = 9.73746e-06
-    	Class 2 = 0.999906
-    	Class 3 = 8.44383e-05
+    	Class 0 = 8.92778e-08
+    	Class 1 = 0.000697179
+    	Class 2 = 0.999115
+    	Class 3 = 0.00018805
     
     True Class: 2
 
@@ -396,24 +402,24 @@ print(all_valid_predictions[5:8])
 ```
 
     (1000, 4)
-    [[  1.22680882e-04   1.51699204e-02   9.16516483e-01   6.81908280e-02]
-     [  2.13671137e-06   6.69176748e-04   8.97344708e-01   1.01984017e-01]
-     [  7.87706971e-01   2.12291107e-01   8.35260380e-07   1.05343008e-06]]
+    [[  7.68844402e-05   4.94505726e-02   7.17186809e-01   2.33285725e-01]
+     [  4.68848475e-06   2.78699957e-03   1.99698508e-01   7.97509730e-01]
+     [  5.91527879e-01   4.08467114e-01   1.72064711e-06   3.34427318e-06]]
 
 
 ----
 
 # Inspection
 
-Now that we have a reasonably working model, we also want to inspect and see what the net has learned. In applications we often don't care what the network has learned as long as it performs well and outperforms our compatitors. For many problems however, we are exactly interested in what the network has learned. What features distinguish a cat from a dog or if it comes to decision making (e.g. health care or self driving cars, we obviously want to be able to understand and be able to justify why a certain decision has been chosen and learn how to correct missbehavior.
+Now that we have a reasonably working model, we also want to inspect and see what the net has learned. In applications, we often don't care what the network has learned as long as it performs well and outperforms our competitors. For many research problems however, we are exactly interested in what the network has learned. What features distinguish a cat from a dog or if it comes to decision making (e.g. health care or self driving cars), we obviously want to be able to understand and be able to justify why a certain decision has been chosen and learn how to correct missbehavior.
 
 In genomics we usually want to learn what sequence features distinguish the sequences from one another and map them back to biological properties and factors. The easiest way is to just plot the filter weights. In the first convolutional layer, our filters are just like position weight matrices, multiplying every base at every position with a learned weight and summing the value up (plus a bias and pipe it through the RELU activation function). Unfortunatly, this becomes less straight forward to interpret in deeper layers. There are ways of back engineering and learning the importance of filters in higher layers (e.g. https://github.com/kundajelab/deeplift) but we concern ourself only with the simple first layer here.
 
-We can get the weigths of the filters from the model, save them as .txt files and plot them out. I wrote aa wrapper to plot the filter weigths for you in R. Run the code, check the filter_X.txt filtes and look at the plots and try to interpret them.
+We can get the weigths of the filters from the model, save them as .txt files and plot them out. I wrote a wrapper to plot the filter weigths for you in R. Run the code, check the filter_X.txt files and look at the plots and try to interpret them.
 
 * Do any look like transciption factor binding sites you know?
 * Do you recognize any sequence features that are not binding motifs?
-* Can you simpliy the sequences/ motifs from the plot an query them in a transcription factor binding motif database (http://jaspar.genereg.net/)
+* Can you simplify the sequences/ motifs from the plot an query them in a transcription factor binding motif database (http://jaspar.genereg.net/)
 * What is your best bet: Which sequence motifs did we use for simulating the sequence classes?
 * Check the input data. Split them up by class into text files with only the sequences one sequence per line (see example). Query them in standard motif analysis tools (e.g. http://rsat.sb-roscoff.fr/oligo-analysis_form.cgi or http://meme-suite.org/tools/meme). Do these tools find different or similar things?
 
