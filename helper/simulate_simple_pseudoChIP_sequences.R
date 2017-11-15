@@ -30,11 +30,6 @@ max.pfm <- reverseComplement(max.list[[1]]@profileMatrix) # pfm matrix
 max.df <- as.data.frame(max.icm@profileMatrix) #get matrix as dataframe
 max.p <- plotICM(max.df)
 
-# # easy consensus
-# ctcf.easy.consensus <- "CCACCAGGGGGCGC"
-# gata.easy.consensus <- "AGATAA"
-# max.easy.consensus <- "CACGTG" 
-
 gc.add <- "GCGCGC"
 at.add <- "ATATAT"
 
@@ -50,9 +45,6 @@ n <- 10000
 # 3: gata + ctcf +
 # initialize dataframes with class tagged
 c0.set <- data.frame(class=rep(0, n))
-# c1.easy.set <- data.frame(class=rep(1, n))
-# c2.easy.set <- data.frame(class=rep(2, n))
-# c3.easy.set <- data.frame(class=rep(3, n))
 c1.pwm.set <- data.frame(class=rep(1, n))
 c2.pwm.set <- data.frame(class=rep(2, n))
 c3.pwm.set <- data.frame(class=rep(3, n))
