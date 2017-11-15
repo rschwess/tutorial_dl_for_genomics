@@ -3,7 +3,7 @@
 library(Biostrings)
 library(BSgenome.Hsapiens.UCSC.hg19)
 library(TFBSTools)
-library(JASPAR2018)
+library(JASPAR2016)
 
 source("/home/ron/fusessh/scripts/plot_themes.R")
 source("/home/ron/fusessh/scripts/utility/R_visualization/functions_for_motif_plotting.R")
@@ -58,7 +58,14 @@ runx2.p <- plotICM(runx2.df)
 
 
 # save motif plots for showcase
-
+ggsave(ctcf.p, filename = "ctcf_motif_plot.png", width = 10, height = 5)
+ggsave(gata.p, filename = "gata_motif_plot.png", width = 8, height = 5)
+ggsave(max.p, filename = "max_motif_plot.png", width = 8, height = 5)
+ggsave(nrf1.p, filename = "nrf1_motif_plot.png", width = 8, height = 5)
+ggsave(esr.p, filename = "esr_motif_plot.png", width = 10, height = 5)
+ggsave(sp1.p, filename = "sp1_motif_plot.png", width = 8, height = 5)
+ggsave(sox9.p, filename = "sox9_motif_plot.png", width = 8, height = 5)
+ggsave(runx2.p, filename = "runx2_motif_plot.png", width = 8, height = 5)
 
 gc.add <- "GCGCGC"
 at.add <- "ATATAT"
@@ -69,26 +76,28 @@ n <- 20000
 
 # generate set of n times 200 bp sequences
 # classes: 
-# 0: GC rich nothing else; sp1, nrf1, 
+# 0: GC, sp1, nrf1, esr1
 # 1:  gata + max + gc + sox9 + runx2
 # 2: ctcf + max + at + sox9 + runx2
 # 3: gata + nrf1 + max + sp1
 # initialize dataframes with class tagged
-c0.set <- data.frame(class=rep(0, n))
+c0.pwm.set <- data.frame(class=rep(0, n))
 c1.pwm.set <- data.frame(class=rep(1, n))
 c2.pwm.set <- data.frame(class=rep(2, n))
 c3.pwm.set <- data.frame(class=rep(3, n))
 
 # create random sequences with pfms and gc and at matches sampled in
-c0.set$seq <- sapply(c0.set$class, function(x) makeRandomSequence(l, add.sequence = as.list(
-  rep(gc.add, sample(c(5:20), 1)), add.reverse = T)))
-
 # with pfm samples
+c0.pwm.set$seq <- sapply(c0.pwm.set$class, function(x) makeRandomSequence(l, add.sequence = rep(gc.add, sample(c(3:10),1)), add.pfm.match = c(
+  rep(list(sp1.pfm), sample(c(1:3),1)), 
+  rep(list(nrf1.pfm), sample(c(1:3),1)),
+  rep(list(esr.pfm), sample(c(1:3),1))
+), add.reverse = T))
 c1.pwm.set$seq <- sapply(c1.pwm.set$class, function(x) makeRandomSequence(l, add.sequence = rep(gc.add, sample(c(3:10),1)), add.pfm.match = c(
   rep(list(gata.pfm), sample(c(1:3),1)), 
   rep(list(max.pfm), sample(c(1:3),1)),
-  rep(list(sp1.pfm), sample(c(1:3),1)),
-  rep(list(nrf1.pfm), sample(c(1:3),1))
+  rep(list(sox9.pfm), sample(c(1:3),1)),
+  rep(list(runx2.pfm), sample(c(1:3),1))
 ), add.reverse = T))
 c2.pwm.set$seq <- sapply(c2.pwm.set$class, function(x) makeRandomSequence(l, add.sequence = rep(at.add, sample(c(3:10),1)), add.pfm.match = c(
   rep(list(max.pfm), sample(c(1:3),1)), 
@@ -107,7 +116,7 @@ c3.pwm.set$seq <- sapply(c3.pwm.set$class, function(x) makeRandomSequence(l, add
 # sample training, test and validation sets -----------------------------------
 # assemble sets
 # easy.set <- rbind(c0.set, c1.easy.set, c2.easy.set, c3.easy.set)
-pwm.set <- rbind(c0.set, c1.pwm.set, c2.pwm.set, c3.pwm.set)
+pwm.set <- rbind(c0.pwm.set, c1.pwm.set, c2.pwm.set, c3.pwm.set)
   
 # randomly resample
 # easy.set <- easy.set[sample(c(1:nrow(easy.set))),]
