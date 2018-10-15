@@ -152,8 +152,8 @@ Now we can read in the data.
 # read data --------------------------------------------------------------------
 train_file = "./data/pwm_seq_200bp_train_set.txt"
 train_labels, train_seqs = read_data(train_file)
-test_file = "./data/pwm_seq_200bp_test_set.txt"
-test_labels, test_seqs = read_data(test_file)
+valid_file = "./data/pwm_seq_200bp_valid_set.txt"
+valid_labels, valid_seqs = read_data(valid_file)
 ```
 
 Lets check how the data look like after we read and hot encoded it.
@@ -285,7 +285,7 @@ model.fit(train_seqs, train_labels,
           batch_size=batch_size,
           epochs=epochs,
           verbose=1,
-          validation_data=(test_seqs, test_labels))
+          validation_data=(valid_seqs, valid_labels))
 ```
 
     Train on 38000 samples, validate on 1000 samples
@@ -308,7 +308,7 @@ model.fit(train_seqs, train_labels,
 
 
 
-Looks alright, the training as well as the test accuracy is climbing from epoch to epoch and slows down a little more after every epoch. It is now your task to find better hyperparameters for our network and training procedure to see how high up you can get the accuracy. For doing that, I suggest taking dl_intro.py, commenting out all the code after the training, adjust your hyperparameters and/or network architectures how you like and running it in the terminal via python dl_intro.py. 
+Looks alright, the training as well as the validation accuracy is climbing from epoch to epoch and slows down a little more after every epoch. It is now your task to find better hyperparameters for our network and training procedure to see how high up you can get the accuracy. For doing that, I suggest taking dl_intro.py, commenting out all the code after the training, adjust your hyperparameters and/or network architectures how you like and running it in the terminal via python dl_intro.py. 
 
 Tipps: 
 
@@ -335,9 +335,9 @@ Once you are happy with you network performance or in case you want to jump ahea
 
 ```python
 # Evaluate ---------------------------------------------------------------------
-valid_file = "./data/pwm_seq_200bp_valid_set.txt"
-valid_labels, valid_seqs = read_data(test_file)
-score = model.evaluate(valid_seqs, valid_labels, verbose=0)
+test_file = "./data/pwm_seq_200bp_test_set.txt"
+test_labels, test_seqs = read_data(test_file)
+score = model.evaluate(test_seqs, test_labels, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 ```
@@ -351,8 +351,8 @@ Once we are happy with our network we obviously want to employ it as well. Lets 
 
 ```python
 # Predictions ------------------------------------------------------------------
-# read valid sequences again
-with open(valid_file, "r") as f:
+# read test sequences again
+with open(test_file, "r") as f:
     seqs = []
     labels = []
     for i,l in enumerate(f):
@@ -396,9 +396,9 @@ print("\nTrue Class: " + single_label)
 
 ```python
 # or just run all predictions for 
-all_valid_predictions = model.predict(valid_seqs)
-print(all_valid_predictions.shape)
-print(all_valid_predictions[5:8])
+all_test_predictions = model.predict(test_seqs)
+print(all_test_predictions.shape)
+print(all_test_predictions[5:8])
 ```
 
     (1000, 4)
