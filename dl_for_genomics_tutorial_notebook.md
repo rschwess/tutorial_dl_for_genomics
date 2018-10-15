@@ -329,7 +329,7 @@ Tipps:
 
 # Evaluation and Prediction
 
-Once you are happy with you network performance or in case you want to jump ahead first and optimize later, we will evaluate our network on the held out validation data. Technically, we only optimized on the training data set but we always kept an eye on the test data loss as well. We are discarding all nets that do well on the training but worse at the test (overfitted), therefore we always have an intrinsic bias. The validation data set is meant to have never been touched throughout the whole optimization process and we evaluate the perormance of our final model on this set to get an unbiased estimate of its performance.
+Once you are happy with you network performance or in case you want to jump ahead first and optimize later, we will evaluate our network on the held out test data. Technically, we only optimized on the training data set but we always kept an eye on the validation data loss as well. We are discarding all nets that do well on the training but worse at the validation set (overfitted), therefore we always have an intrinsic bias. The test data set is meant to have never been touched throughout the whole optimization process and we evaluate the perormance of our final model on this set to get an unbiased estimate of its performance.
 
 
 
