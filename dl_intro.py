@@ -49,8 +49,8 @@ def read_data(infile):
 # read data --------------------------------------------------------------------
 train_file = "./data/pwm_seq_200bp_train_set.txt"
 train_labels, train_seqs = read_data(train_file)
-test_file = "./data/pwm_seq_200bp_test_set.txt"
-test_labels, test_seqs = read_data(test_file)
+valid_file = "./data/pwm_seq_200bp_valid_set.txt"
+valid_labels, valid_seqs = read_data(valid_file)
 
 # Gloabl Options
 num_classes = 4
@@ -84,19 +84,19 @@ model.fit(train_seqs, train_labels,
           batch_size=batch_size,
           epochs=epochs,
           verbose=1,
-          validation_data=(test_seqs, test_labels))
+          validation_data=(valid_seqs, valid_labels))
 
 
 # # Evaluate ---------------------------------------------------------------------
-# valid_file = "./data/pwm_seq_200bp_test_set.txt"
-# valid_labels, valid_seqs = read_data(valid_file)
-# score = model.evaluate(valid_seqs, valid_labels, verbose=0)
+# test_file = "./data/pwm_seq_200bp_test_set.txt"
+# test_labels, test_seqs = read_data(test_file)
+# score = model.evaluate(test_seqs, test_labels, verbose=0)
 # print('Test loss:', score[0])
 # print('Test accuracy:', score[1])
 #
 # # Predictions ------------------------------------------------------------------
-# # read valid sequences again
-# with open(valid_file, "r") as f:
+# # read test sequences again
+# with open(test_file, "r") as f:
 #     seqs = []
 #     labels = []
 #     for i,l in enumerate(f):
