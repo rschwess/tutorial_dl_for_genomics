@@ -12,7 +12,7 @@ A short tutorial to using DL and keras for genomics with sequence data.
       * source activate tutorial
       * conda install pip
       * conda install nb_conda (to see virtual environments in jupyter notebooks)
-      * pip install numpy keras
+      * pip install numpy tensorflow keras
       * to leave type: source deactivate
       
 * R v3+
