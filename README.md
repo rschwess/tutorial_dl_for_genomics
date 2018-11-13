@@ -8,12 +8,12 @@ A short tutorial to using DL and keras for genomics with sequence data.
     * numpy
   * I recommend anaconda https://docs.anaconda.com/ or miniconda to manage environments
     * to create a self contained environment after conda install:
-      * conda create -n tutorial python=3.6
-      * source activate tutorial
-      * conda install pip
-      * conda install nb_conda (to see virtual environments in jupyter notebooks)
-      * pip install numpy tensorflow keras
-      * to leave type: source deactivate
+      * `conda create -n tutorial python=3.6`
+      * `conda activate tutorial`
+      * `conda install pip`
+      * `conda install nb_conda` (to see virtual environments in jupyter notebooks)
+      * `pip install numpy tensorflow keras`
+      * to leave type: `source deactivate`
       
 * R v3+
   * packages:
