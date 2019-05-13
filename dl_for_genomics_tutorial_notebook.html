@@ -12002,8 +12002,8 @@ Validation:
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># read data --------------------------------------------------------------------</span>
 <span class="n">train_file</span> <span class="o">=</span> <span class="s2">&quot;./data/pwm_seq_200bp_train_set.txt&quot;</span>
 <span class="n">train_labels</span><span class="p">,</span> <span class="n">train_seqs</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">train_file</span><span class="p">)</span>
-<span class="n">test_file</span> <span class="o">=</span> <span class="s2">&quot;./data/pwm_seq_200bp_test_set.txt&quot;</span>
-<span class="n">test_labels</span><span class="p">,</span> <span class="n">test_seqs</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">test_file</span><span class="p">)</span>
+<span class="n">valid_file</span> <span class="o">=</span> <span class="s2">&quot;./data/pwm_seq_200bp_valid_set.txt&quot;</span>
+<span class="n">valid_labels</span><span class="p">,</span> <span class="n">valid_seqs</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">valid_file</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12220,7 +12220,7 @@ _________________________________________________________________
           <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
           <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
           <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-          <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">test_seqs</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">))</span>
+          <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">valid_seqs</span><span class="p">,</span> <span class="n">valid_labels</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -12273,7 +12273,7 @@ Epoch 5/5
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Looks alright, the training as well as the test accuracy is climbing from epoch to epoch and slows down a little more after every epoch. It is now your task to find better hyperparameters for our network and training procedure to see how high up you can get the accuracy. For doing that, I suggest taking dl_intro.py, commenting out all the code after the training, adjust your hyperparameters and/or network architectures how you like and running it in the terminal via python dl_intro.py.</p>
+<p>Looks alright, the training as well as the validation accuracy is climbing from epoch to epoch and slows down a little more after every epoch. It is now your task to find better hyperparameters for our network and training procedure to see how high up you can get the accuracy. For doing that, I suggest taking dl_intro.py, commenting out all the code after the training, adjust your hyperparameters and/or network architectures how you like and running it in the terminal via python dl_intro.py.</p>
 <p>Tipps:</p>
 <ul>
 <li><p>Should we train longer?</p>
@@ -12301,9 +12301,9 @@ Epoch 5/5
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Evaluate ---------------------------------------------------------------------</span>
-<span class="n">valid_file</span> <span class="o">=</span> <span class="s2">&quot;./data/pwm_seq_200bp_valid_set.txt&quot;</span>
-<span class="n">valid_labels</span><span class="p">,</span> <span class="n">valid_seqs</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">test_file</span><span class="p">)</span>
-<span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">valid_seqs</span><span class="p">,</span> <span class="n">valid_labels</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">test_file</span> <span class="o">=</span> <span class="s2">&quot;./data/pwm_seq_200bp_test_set.txt&quot;</span>
+<span class="n">test_labels</span><span class="p">,</span> <span class="n">test_seqs</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="n">test_file</span><span class="p">)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_seqs</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test loss:&#39;</span><span class="p">,</span> <span class="n">score</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test accuracy:&#39;</span><span class="p">,</span> <span class="n">score</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
@@ -12347,8 +12347,8 @@ Test accuracy: 0.947
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Predictions ------------------------------------------------------------------</span>
-<span class="c1"># read valid sequences again</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">valid_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="c1"># read test sequences again</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">test_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">seqs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
@@ -12415,9 +12415,9 @@ True Class: 2
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># or just run all predictions for </span>
-<span class="n">all_valid_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">valid_seqs</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">all_valid_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">all_valid_predictions</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span>
+<span class="n">all_test_predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_seqs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">all_test_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">all_test_predictions</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span>
 </pre></div>
 
 </div>
