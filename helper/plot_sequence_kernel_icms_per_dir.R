@@ -38,7 +38,7 @@ for(weight in weights){
     # name rows
     rownames(m) <- c("A", "C", "G", "T")
     # convert to ICM
-    # m <- weightsToIcm(m, base = 1000)
+    m <- weightsToIcm(m, base = 1000)
     # make plot
     q <- plotWeights(m)
     # save
