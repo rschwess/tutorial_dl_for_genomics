@@ -46,6 +46,8 @@ def read_data(infile):
         hot_seqs[j,] = hotsequence
     return hot_labels, hot_seqs
 
+os.chdir("/home/ron/fusessh/teaching/tutorial_dl_for_genomics")
+
 # read data --------------------------------------------------------------------
 train_file = "./data/pwm_seq_200bp_train_set.txt"
 train_labels, train_seqs = read_data(train_file)
@@ -85,6 +87,8 @@ model.fit(train_seqs, train_labels,
           epochs=epochs,
           verbose=1,
           validation_data=(valid_seqs, valid_labels))
+
+
 
 
 # # Evaluate ---------------------------------------------------------------------
